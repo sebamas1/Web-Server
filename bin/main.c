@@ -29,9 +29,9 @@ size_t contar_cifras_numero(size_t numero_a_contar)
     return contador;
 }
 
-int callback_imprimir(__attribute__((unused)) const struct _u_request *request, struct _u_response *response, __attribute__((unused)) void *user_data)
+int callback_usuarios_creados(__attribute__((unused)) const struct _u_request *request, struct _u_response *response, __attribute__((unused)) void *user_data)
 {
-    char *inicio_respuesta = "El contador esta en el valor de: ";
+    char *inicio_respuesta = "Numero de usuarios nuevos creados: ";
     size_t largo_respuesta = strlen(inicio_respuesta);
     size_t cifras = contar_cifras_numero(i);
     char aux[cifras];
@@ -51,34 +51,28 @@ int callback_imprimir(__attribute__((unused)) const struct _u_request *request, 
 }
 
 
-int callback_incrementar(__attribute__((unused)) const struct _u_request *request, struct _u_response *response, __attribute__((unused)) void *user_data)
+int callback_useradd(__attribute__((unused)) const struct _u_request *request, struct _u_response *response, __attribute__((unused)) void *user_data)
 {
-    size_t incremento = (unsigned) atol(u_map_get(request->map_post_body, "incremento"));
+   const char* user_name = u_map_get(request->map_post_body, "user_name");
 
-    if(incremento == 0)
+    if(user_name == 0)
     {
-        ulfius_set_string_body_response(response, 400, "No se pudo obtener el incremento, o el mismo es nulo\n");
+        ulfius_set_string_body_response(response, 400, "No se pudo obtener el nombre de usuario, o el mismo es nulo\n");
         return U_CALLBACK_CONTINUE;
     }
     
-    char *inicio_respuesta = "Incrementando en ";
+    char *inicio_respuesta = "Nombre de usuario: ";
     size_t largo_respuesta = strlen(inicio_respuesta);
-    size_t cifras = contar_cifras_numero(incremento);
-    char aux[incremento];
-    memset(aux, '\0', cifras);
 
-    char respuesta[largo_respuesta + cifras];
-    memset(respuesta, '\0', largo_respuesta + cifras);
+    char respuesta[largo_respuesta + strlen(user_name)];
+    memset(respuesta, '\0', largo_respuesta + strlen(user_name));
     strcat(respuesta, inicio_respuesta);
     
-    sprintf(aux, "%lu", incremento);
-    strcat(respuesta, aux);
-
-
-    strcat(respuesta, " el contador...\n");
+    strcat(respuesta, user_name);
+    strcat(respuesta, "\n");
 
     ulfius_set_string_body_response(response, 400, respuesta);
-    i += incremento;
+    i++;
     return U_CALLBACK_CONTINUE;
 }
 
@@ -94,8 +88,8 @@ int main(void)
     }
 
     // Endpoint list declaration
-    ulfius_add_endpoint_by_val(&instance, "GET", "/contadorusuarios", NULL, 1, &callback_imprimir, NULL);
-    ulfius_add_endpoint_by_val(&instance, "POST", "/useradd", NULL, 0, &callback_incrementar, NULL);
+    ulfius_add_endpoint_by_val(&instance, "GET", "/contadorusuarios", NULL, 1, &callback_usuarios_creados, NULL);
+    ulfius_add_endpoint_by_val(&instance, "POST", "/useradd", NULL, 0, &callback_useradd, NULL);
 
     // Start the framework
     if (ulfius_start_framework(&instance) == U_OK)
