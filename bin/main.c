@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <ulfius.h>
 #include <string.h>
+#include <jansson.h>
+//#include "json.h"
 
 #define PORT 8080
 
@@ -16,18 +18,46 @@
 
 size_t i = 0;
 
+int parse_json(json_t *root, const char **user_name, const char **user_pass){
+    if(root){
+        json_t *user_name_json = json_object_get(root, "user_name");
+        json_t *user_pass_json = json_object_get(root, "password");
+        if(user_name_json && user_pass_json){
+            *user_name = json_string_value(user_name_json);
+            *user_pass = json_string_value(user_pass_json);
+            return 0;
+        }
+    }
+    return -1;
+}
+//funcion que crea un body response en formato json de la forma:
+//{
+//      "id": 142,
+//      "username": "myuser",
+//      "created_at": "2019-06-22 02:19:59"
+// }
+json_t* create_json_response(int id, const char *username, const char *created_at){
+    json_t *response = json_object();
+    json_object_set_new(response, "id", json_integer(id));
+    json_object_set_new(response, "username", json_string(username));
+    json_object_set_new(response, "created_at", json_string(created_at));
+    return response;
+}
+
+
 size_t contar_cifras_numero(size_t numero_a_contar)
 {
-    size_t contador=1;
+    size_t contador = 1;
     size_t num = numero_a_contar;
- 
-    while(num/10>0)
+
+    while (num / 10 > 0)
     {
-        num = num/10;
+        num = num / 10;
         contador++;
     }
     return contador;
 }
+
 
 int callback_usuarios_creados(__attribute__((unused)) const struct _u_request *request, struct _u_response *response, __attribute__((unused)) void *user_data)
 {
@@ -40,38 +70,34 @@ int callback_usuarios_creados(__attribute__((unused)) const struct _u_request *r
     char respuesta[largo_respuesta + cifras];
     memset(respuesta, '\0', largo_respuesta + cifras);
     strcat(respuesta, inicio_respuesta);
-    
+
     sprintf(aux, "%lu", i);
     strcat(respuesta, aux);
     strcat(respuesta, "\n");
-    
+
     ulfius_set_string_body_response(response, 400, respuesta);
 
     return U_CALLBACK_CONTINUE;
 }
 
-
 int callback_useradd(__attribute__((unused)) const struct _u_request *request, struct _u_response *response, __attribute__((unused)) void *user_data)
 {
-   const char* user_name = u_map_get(request->map_post_body, "user_name");
+    const char *user_name = NULL;
+    const char *user_pass = NULL;
 
-    if(user_name == 0)
+    json_t *mensaje_json = ulfius_get_json_body_request(request, NULL);
+    if (mensaje_json == NULL)
     {
-        ulfius_set_string_body_response(response, 400, "No se pudo obtener el nombre de usuario, o el mismo es nulo\n");
+        ulfius_set_string_body_response(response, 400, "No se pudo obtener el json del body\n");
         return U_CALLBACK_CONTINUE;
     }
-    
-    char *inicio_respuesta = "Nombre de usuario: ";
-    size_t largo_respuesta = strlen(inicio_respuesta);
 
-    char respuesta[largo_respuesta + strlen(user_name)];
-    memset(respuesta, '\0', largo_respuesta + strlen(user_name));
-    strcat(respuesta, inicio_respuesta);
-    
-    strcat(respuesta, user_name);
-    strcat(respuesta, "\n");
+    if(parse_json(mensaje_json, &user_name, &user_pass)){
+        ulfius_set_string_body_response(response, 400, "Se debe ingresar usuario y contraseña\n");
+        return U_CALLBACK_CONTINUE;
+    }
 
-    ulfius_set_string_body_response(response, 400, respuesta);
+    ulfius_set_json_body_response(response, 200, create_json_response((int) i, user_name, "2019-06-22 02:19:59"));
     i++;
     return U_CALLBACK_CONTINUE;
 }
