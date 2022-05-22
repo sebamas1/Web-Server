@@ -17,6 +17,27 @@
 #define PORT 8080
 int numero_usuarios = 0;
 
+int leer_headers(const struct _u_request * request, struct _u_response *response) {
+    struct _u_map *headers = u_map_copy(request->map_header);
+    if (u_map_has_key(headers, "Content-Type"))
+    {
+        if (strcmp(u_map_get(headers, "Content-Type"), "application/json") == 0)
+        {
+            return 0;
+        }
+        else
+        {
+            ulfius_set_string_body_response(response, 200, "Content-Type no es application/json");
+            return -1;
+        }
+    }
+    else
+    {
+        ulfius_set_string_body_response(response, 200, "No se encontro Content-Type");
+        return -1;
+    }
+}
+
 // esta funcion imprime el nombre de todos los usuarios presentes en el sistema usando getpwent a
 // partir del usuario sebastian
 void obtener_usuarios(char **usuarios, int cantidad_usuarios)
@@ -166,6 +187,9 @@ json_t *create_json_array_usuarios(char **usuarios, int cantidad_usuarios)
 
 int callback_usuarios_creados(__attribute__((unused)) const struct _u_request *request, struct _u_response *response, __attribute__((unused)) void *user_data)
 {
+    if(leer_headers(request, response)){
+        return U_CALLBACK_CONTINUE;
+    }
     int cantidad_usuarios = get_cantidad_usuarios();
     char * usuarios[cantidad_usuarios];
 
@@ -179,15 +203,22 @@ int callback_usuarios_creados(__attribute__((unused)) const struct _u_request *r
 }
 
 int callback_contador_increment(__attribute__((unused)) const struct _u_request *request, __attribute__((unused)) struct _u_response *response, __attribute__((unused)) void *user_data){
+     if(leer_headers(request, response)){
+        return U_CALLBACK_CONTINUE;
+    }
     numero_usuarios++;
     // json_t *response_json = json_object();
     // json_object_set_new(response_json, "description", json_integer((long long int) numero_usuarios));
     // ulfius_set_json_body_response(response, 200, response_json);
+    
     return U_CALLBACK_CONTINUE;
 }
 
 int callback_useradd(__attribute__((unused)) const struct _u_request *request, struct _u_response *response, __attribute__((unused)) void *user_data)
 {
+    if(leer_headers(request, response)){
+        return U_CALLBACK_CONTINUE;
+    }
     const char *user_name = NULL;
     const char *user_pass = NULL;
 
@@ -229,6 +260,9 @@ int callback_useradd(__attribute__((unused)) const struct _u_request *request, s
     return U_CALLBACK_CONTINUE;
 }
 int callback_contador_value(__attribute__((unused)) const struct _u_request *request, struct _u_response *response, __attribute__((unused)) void *user_data){
+    if(leer_headers(request, response)){
+        return U_CALLBACK_CONTINUE;
+    }
     json_t *response_json = json_object();
     json_object_set_new(response_json, "description", json_integer((long long int) numero_usuarios));
     ulfius_set_json_body_response(response, 200, response_json);
