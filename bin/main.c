@@ -15,6 +15,7 @@
 #include <pwd.h>
 
 #define PORT 8080
+int numero_usuarios = 0;
 
 // esta funcion imprime el nombre de todos los usuarios presentes en el sistema usando getpwent a
 // partir del usuario sebastian
@@ -106,6 +107,10 @@ int validar_usuario(const char *usuario)
     size_t largo_usuario;
     char *caracteres_prohibidos = "\\/:*?\"<>|&;";
     largo_usuario = strlen(usuario);
+    if (largo_usuario > 10)
+    {
+        return -1;
+    }
     for (size_t i = 0; i < largo_usuario; i++)
     {
         if (strchr(caracteres_prohibidos, usuario[i]) != NULL)
@@ -115,8 +120,6 @@ int validar_usuario(const char *usuario)
     }
     return 0;
 }
-
-size_t i = 0;
 
 int parse_json(json_t *root, const char **user_name, const char **user_pass)
 {
@@ -175,6 +178,14 @@ int callback_usuarios_creados(__attribute__((unused)) const struct _u_request *r
     return U_CALLBACK_CONTINUE;
 }
 
+int callback_contador_increment(__attribute__((unused)) const struct _u_request *request, __attribute__((unused)) struct _u_response *response, __attribute__((unused)) void *user_data){
+    numero_usuarios++;
+    // json_t *response_json = json_object();
+    // json_object_set_new(response_json, "description", json_integer((long long int) numero_usuarios));
+    // ulfius_set_json_body_response(response, 200, response_json);
+    return U_CALLBACK_CONTINUE;
+}
+
 int callback_useradd(__attribute__((unused)) const struct _u_request *request, struct _u_response *response, __attribute__((unused)) void *user_data)
 {
     const char *user_name = NULL;
@@ -194,7 +205,7 @@ int callback_useradd(__attribute__((unused)) const struct _u_request *request, s
     }
     if (validar_usuario(user_name))
     {
-        ulfius_set_string_body_response(response, 400, "El nombre de usuario no puede contener caracteres especiales.\n");
+        ulfius_set_string_body_response(response, 400, "El nombre de usuario no puede contener caracteres especiales y debe tener menos de 10 caracteres.\n");
         return U_CALLBACK_CONTINUE;
     }
     if (validar_password(user_pass))
@@ -205,12 +216,29 @@ int callback_useradd(__attribute__((unused)) const struct _u_request *request, s
     char *created_at = get_time_string();
 
     ulfius_set_json_body_response(response, 200, create_json_respose_useradd(getid("sebastian"), user_name, created_at));
-    i++;
+
+    char useradd[20] = "useradd ";
+    strncat(useradd, user_name, strlen(user_name));
+    if(system(useradd)){
+        ulfius_set_string_body_response(response, 400, "No se pudo crear el usuario\n");
+        return U_CALLBACK_CONTINUE;
+    }
+
+    callback_contador_increment(request, response, (void*) NULL);
+    
+    return U_CALLBACK_CONTINUE;
+}
+int callback_contador_value(__attribute__((unused)) const struct _u_request *request, struct _u_response *response, __attribute__((unused)) void *user_data){
+    json_t *response_json = json_object();
+    json_object_set_new(response_json, "description", json_integer((long long int) numero_usuarios));
+    ulfius_set_json_body_response(response, 200, response_json);
     return U_CALLBACK_CONTINUE;
 }
 
+
 int main(void)
 {
+    numero_usuarios = get_cantidad_usuarios();
     struct _u_instance instance;
 
     // Initialize instance with the port number
@@ -223,6 +251,8 @@ int main(void)
     // Endpoint list declaration
     ulfius_add_endpoint_by_val(&instance, "GET", "/api/users", NULL, 1, &callback_usuarios_creados, NULL);
     ulfius_add_endpoint_by_val(&instance, "POST", "/api/users", NULL, 0, &callback_useradd, NULL);
+    ulfius_add_endpoint_by_val(&instance, "GET", "/contador/value", NULL, 0, &callback_contador_value, NULL);
+    ulfius_add_endpoint_by_val(&instance, "POST", "/contador/increment", NULL, 0, &callback_contador_increment, NULL);
 
     // Start the framework
     if (ulfius_start_framework(&instance) == U_OK)
