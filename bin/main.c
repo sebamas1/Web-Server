@@ -13,9 +13,22 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <pwd.h>
+#include <arpa/inet.h>
 
 #define PORT 8080
 int numero_usuarios = 0;
+
+
+//cuenta las cifras del int pasado como argumento y devuelve ese valor
+int contar_cifras(int numero){
+    int contador = 0;
+    while(numero != 0){
+        numero = numero/10;
+        contador++;
+    }
+    return contador;
+}
+
 
 int leer_headers(const struct _u_request * request, struct _u_response *response) {
     struct _u_map *headers = u_map_copy(request->map_header);
@@ -94,6 +107,26 @@ char *get_time_string()
     char *time_string = malloc(sizeof(char) * 20);
     sprintf(time_string, "%d-%02d-%02d %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
     return time_string;
+}
+
+/*
+Funcion loguear toma como parametro un char* y lo loguea en el archivo log.txt
+En caso de que no exista lo crea, y en caso de que si exista agrega el nuevo mensaje
+El mensaje tomado como argumento es modificado para que tenga la siguiente forma
+"<fecha> | <Nombre del servicio> | <mensaje>"
+El nombre del servicio se lo toma como argumento y la fecha se la obtiene de la funcion *get_time_string
+*/
+void loguear(char* mensaje, char* servicio){
+    FILE *log;
+    char *time_string;
+    time_string = get_time_string();
+    log = fopen("log.txt", "a");
+    if(log == NULL){
+        printf("Error al abrir el archivo log.txt\n");
+        return;
+    }
+    fprintf(log, "%s | %s | %s\n", time_string, servicio, mensaje);
+    fclose(log);
 }
 
 int validar_password(const char *password)
@@ -199,6 +232,18 @@ int callback_usuarios_creados(__attribute__((unused)) const struct _u_request *r
 
     ulfius_set_json_body_response(response, 200, response_json);
 
+    //libera la memoria de los usuarios
+    for (int i = 0; i < cantidad_usuarios; i++)
+    {
+        free(usuarios[i]);
+    }
+
+    int cifras = contar_cifras(cantidad_usuarios);
+    char mensaje_log[(int) strlen("Usuarios creados: ") + cifras + 1];
+    strcpy(mensaje_log, "Usuarios creados: ");
+    sprintf(mensaje_log + strlen("Usuarios creados: "), "%d", cantidad_usuarios);
+    loguear(mensaje_log, "<usuarios_creados>");
+
     return U_CALLBACK_CONTINUE;
 }
 
@@ -207,12 +252,25 @@ int callback_contador_increment(__attribute__((unused)) const struct _u_request 
         return U_CALLBACK_CONTINUE;
     }
     numero_usuarios++;
+
     // json_t *response_json = json_object();
     // json_object_set_new(response_json, "description", json_integer((long long int) numero_usuarios));
     // ulfius_set_json_body_response(response, 200, response_json);
+
+    //obtiene el ip del cliente
+    struct sockaddr_in *client_addr = (struct sockaddr_in *)request->client_address;
+    char ip_cliente[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(client_addr->sin_addr), ip_cliente, INET_ADDRSTRLEN);
     
+    //concatena Contador incrementado desde: y el ip del cliente
+    char mensaje_log[(int) strlen("Contador incrementado desde: ") + INET_ADDRSTRLEN + 1];
+    strcpy(mensaje_log, "Contador incrementado desde: ");
+    strcat(mensaje_log, ip_cliente);
+    loguear(mensaje_log, "<contador_increment>");
+
     return U_CALLBACK_CONTINUE;
 }
+
 
 int callback_useradd(__attribute__((unused)) const struct _u_request *request, struct _u_response *response, __attribute__((unused)) void *user_data)
 {
@@ -244,9 +302,6 @@ int callback_useradd(__attribute__((unused)) const struct _u_request *request, s
         ulfius_set_string_body_response(response, 400, "La contraseña debe tener entre 5 y 10 numeros y debe estar compuesta unicamente por caracteres numericos\n");
         return U_CALLBACK_CONTINUE;
     }
-    char *created_at = get_time_string();
-
-    ulfius_set_json_body_response(response, 200, create_json_respose_useradd(getid("sebastian"), user_name, created_at));
 
     char useradd[20] = "useradd ";
     strncat(useradd, user_name, strlen(user_name));
@@ -255,7 +310,24 @@ int callback_useradd(__attribute__((unused)) const struct _u_request *request, s
         return U_CALLBACK_CONTINUE;
     }
 
+    char *created_at = get_time_string();
+    ulfius_set_json_body_response(response, 200, create_json_respose_useradd(getid((char*)user_name), user_name, created_at));
+
     callback_contador_increment(request, response, (void*) NULL);
+
+    //convierte el id en un string
+    int cifras = contar_cifras(getid((char*) user_name)) + 1;
+    char id[cifras];
+    sprintf(id, "%d", getid((char*) user_name));
+    //concatena Usuario <id> creado
+    char usuario_creado[strlen("Usuario ") + strlen(id) + strlen(" creado") + 1];
+    strcpy(usuario_creado, "Usuario ");
+    strncat(usuario_creado, id, strlen(id));
+    strcat(usuario_creado, " creado");
+
+    loguear(usuario_creado, "<useradd>");
+
+    
     
     return U_CALLBACK_CONTINUE;
 }
