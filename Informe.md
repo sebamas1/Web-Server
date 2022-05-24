@@ -5,7 +5,7 @@ Para instalar nginx se debe seguir las instrucciones presentes en [nginx](https:
 Primero se entra a /etc/nginx/sites-available y se debe crear 1 archivo por cada servidor que se desea hacer.
 
 ~~~
-cd /etc/nginx/sites_available
+cd /etc/nginx/sites-available
 cp default tp6.com
 cp default contadorusuarios.com 
 ~~~
@@ -30,6 +30,8 @@ Ademas se le debe decir al host local que cuando intente resolver los nombres de
 ~~~
 nano /etc/hosts
 ~~~
+
+Y luego escribe manualmente el dominio y la direccion a la que se lo quiere asociar.
 
 Fuentes:
 
