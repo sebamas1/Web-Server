@@ -120,7 +120,7 @@ void loguear(char* mensaje, char* servicio){
     FILE *log;
     char *time_string;
     time_string = get_time_string();
-    log = fopen("log.txt", "a");
+    log = fopen("/var/log/tp6_mascasariego_2022/log_tp6", "a");
     if(log == NULL){
         printf("Error al abrir el archivo log.txt\n");
         return;

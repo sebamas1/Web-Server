@@ -1,0 +1,7 @@
+/var/log/tp6_mascasariego_2022/log_tp6 {
+    monthly create 0664 root utmp  
+        minsize 1K
+    rotate 2
+    compress
+    notifempty
+}

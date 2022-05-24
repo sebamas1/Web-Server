@@ -36,3 +36,26 @@ Fuentes:
 [Config inicial de nginx y de sus servidores](https://www.youtube.com/watch?v=_LQv96MdtCk)
 
 [Proxy pass](https://www.youtube.com/watch?v=fVM658GMbTo)
+
+## Configuracion del logrotation
+
+Se creo un archivo dentro de la carpeta conf llamado tp6_mascasariego_2022 que es la configuracion necesaria para el logrotation. Este archivo es copiado en /etc/logrotate.d, y cuando el sistema operativo realice un logrotation programado, va a ejecutar la configuracion copiada. Esta configuracion rota el log guardado en /var/log/tp6_mascasariego_2022.
+La creacion de las carpetas necesarias y de la configuracion es realizada por el makefile, ejecutando el comando:
+
+~~~
+make config
+~~~
+**Es posible que se deba usar esto con privilegios de sudo**
+
+Para forzar una rotacion de log en debug:
+
+~~~
+sudo logrotate /etc/logrotate.conf --debug
+~~~
+
+
+Fuentes:
+
+[Logrotate](https://www.digitalocean.com/community/tutorials/how-to-manage-logfiles-with-logrotate-on-ubuntu-16-04)
+
+[Video explicacion](https://www.youtube.com/watch?v=SI3rHpVXrdc)
