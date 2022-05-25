@@ -56,6 +56,9 @@ int main(void)
     if (ulfius_start_framework(&instance) == U_OK)
     {
         printf("Start framework on port %d contadorusuarios\n", instance.port);
+        while(1){
+            
+        }
 
         // Wait for the user to press <enter> on the console to quit the application
         getchar();

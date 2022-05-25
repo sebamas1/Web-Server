@@ -1,0 +1,11 @@
+[Unit]
+Description=Tp6 2022 contadorusuarios Mas Casariego
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/local/tp6_mascasariego/contadorusuarios
+
+[Install]
+WantedBy=multi-user.target

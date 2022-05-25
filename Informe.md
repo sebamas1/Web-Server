@@ -1,9 +1,9 @@
 ## Lo que falta
 
-- Falta que de alguna forma metas al /etc/hosts que localhost te lo reconozca como contadorusuarios.com y tp6.com mediante el makefile
 - Falta sacar el hardcodeo ese de que se leen los usuarios a partir de "sebastian"
-- Falta el systemD con todas las modificaciones que le tengas que hacer al makefile para que configure el programa
 - Falta probar lo del SSH con el usuario
+
+
 
 
 ## Requerimientos
@@ -72,9 +72,31 @@ Para forzar una rotacion de log en debug:
 sudo logrotate /etc/logrotate.conf --debug
 ~~~
 
+Los logs son guardados en **/var/log/tp6_mascasariego_2022**.
+
 
 Fuentes:
 
 [Logrotate](https://www.digitalocean.com/community/tutorials/how-to-manage-logfiles-with-logrotate-on-ubuntu-16-04)
 
 [Video explicacion](https://www.youtube.com/watch?v=SI3rHpVXrdc)
+
+## Configuracion de systemd
+
+Se crearon 2 nuevos archivos de servicio que son los que toma el systemd para iniciar los programas.
+Estos dos archivos se copian mediante el makefile en **/etc/systemd/system** con lo que ahora systemd 
+sabe que archivo de configuracion abrir para iniciar los programas. 
+Los ejecutables deben estar en una carpeta que este presente en todos los linux, por lo que se eligio poner los ejecutables en **/usr/local** y crear ahi una carpeta para guardar los ejecutables.
+
+Una vez puestos los ejecutables en /usr/local y los archivos de configuracion en /etc/systemd/system, se usaran 4 comandos para manejar el servicio
+
+- systemctl start <nombre_servicio> -> este comando inicia el servicio
+- systemctl stop <nombre_servicio> -> detiene el servicio
+- systemctl enable <nombre_servicio> -> habilita el servicio para que se inicie al encender la computadora
+- systemctl disable <nombre_servicio> -> deshabilita el servicio y ya no es ejecutado al inicio de la computadora
+
+Es posible usar el comando **systemctl status <nombre_servicio>** te muestra info sobre el servicio
+
+Los nombres de los servicios es 
+- contadorusuarios_mascasariego
+- creadorusuarios_mascasariego

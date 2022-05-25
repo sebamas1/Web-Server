@@ -1,0 +1,11 @@
+[Unit]
+Description=Tp6 2022 creadorusuarios Mas Casariego
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/local/tp6_mascasariego/creadorusuarios
+
+[Install]
+WantedBy=multi-user.target

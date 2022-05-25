@@ -1,6 +1,6 @@
 CFLAGS = -Wall -pedantic -Werror -Wextra -Wconversion -std=gnu11
 
-all : creadorusuarios contadorusuarios
+all : /usr/local/tp6_mascasariego/creadorusuarios /usr/local/tp6_mascasariego/contadorusuarios
 
 config: 
 	mkdir -p /var/log/tp6_mascasariego_2022
@@ -10,12 +10,20 @@ config:
 	ln -s /etc/nginx/sites-available/tp6.com /etc/nginx/sites-enabled/tp6.com
 	ln -s /etc/nginx/sites-available/contadorusuarios.com /etc/nginx/sites-enabled/contadorusuarios.com
 	nginx -s reload
+	grep -qxF '127.0.0.1 	tp6.com' /etc/hosts || echo '127.0.0.1 	tp6.com' >> /etc/hosts
+	grep -qxF '127.0.0.1	contadorusuarios.com' /etc/hosts || echo '127.0.0.1	contadorusuarios.com' >> /etc/hosts
+	cp conf/contadorusuarios_mascasariego.service /etc/systemd/system
+	cp conf/creadorusuarios_mascasariego.service /etc/systemd/system
+	systemctl daemon-reload
+	
 
-creadorusuarios: obj/creadorusuarios.o obj/util.o obj/comun.o
-	gcc $(CFLAGS) -o creadorusuarios $^ -lulfius -ljansson -lcurl
+/usr/local/tp6_mascasariego/creadorusuarios: obj/creadorusuarios.o obj/util.o obj/comun.o
+	mkdir -p /usr/local/tp6_mascasariego
+	gcc $(CFLAGS) -o /usr/local/tp6_mascasariego/creadorusuarios $^ -lulfius -ljansson -lcurl
 
-contadorusuarios: obj/contadorusuarios.o obj/comun.o
-	gcc $(CFLAGS) -o contadorusuarios $^ -lulfius -ljansson
+/usr/local/tp6_mascasariego/contadorusuarios: obj/contadorusuarios.o obj/comun.o
+	mkdir -p /usr/local/tp6_mascasariego
+	gcc $(CFLAGS) -o /usr/local/tp6_mascasariego/contadorusuarios $^ -lulfius -ljansson
 
 obj/creadorusuarios.o: bin/creadorusuarios/creadorusuarios.c
 	mkdir -p obj
@@ -35,13 +43,17 @@ obj/util.o: bin/creadorusuarios/util.c
 
 clean:
 	rm -f -r obj/*
-	rm -f tp6
-	rm -f tp6.com
-	rm -f contadorusuarios.com
 	rm -f contadorusuarios
 	rm -f creadorusuarios
 	rm /etc/nginx/sites-enabled/tp6.com
 	rm /etc/nginx/sites-enabled/contadorusuarios.com
 	rm /etc/nginx/sites-available/tp6.com
 	rm /etc/nginx/sites-available/contadorusuarios.com
+	sed -i '/127.0.0.1 	tp6.com/d' /etc/hosts
+	sed -i '/127.0.0.1	contadorusuarios.com/d' /etc/hosts
+	rm /usr/local/tp6_mascasariego/creadorusuarios
+	rm /usr/local/tp6_mascasariego/contadorusuarios
+	rm /etc/systemd/system/creadorusuarios_mascasariego.service
+	rm /etc/systemd/system/contadorusuarios_mascasariego.service
+	rmdir /usr/local/tp6_mascasariego
 	rmdir obj

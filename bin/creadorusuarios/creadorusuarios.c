@@ -130,7 +130,7 @@ int callback_useradd(__attribute__((unused)) const struct _u_request *request, s
 
     if (incrementar_contador_usuarios())
     {
-        loguear("No se pudo incrementar el contador porque el servidor esta caido o el formato de envio es incorrecto", "<contador_increment>");
+        loguear("No se pudo incrementar el contador porque el servidor esta caido o el formato de envio es incorrecto", "<useradd>");
     }
 
     // convierte el id en un string
@@ -169,6 +169,9 @@ int main(void)
         printf("Start framework on port %d creadorusuarios\n", instance.port);
 
         // Wait for the user to press <enter> on the console to quit the application
+        while(1){
+            
+        }
         getchar();
     }
     else
