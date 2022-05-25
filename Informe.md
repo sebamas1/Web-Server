@@ -1,6 +1,15 @@
-Para instalar nginx se debe seguir las instrucciones presentes en [nginx](https://nginx.org/en/linux_packages.html)
+## Requerimientos
+
+Se deben tener las siguientes herramientas instaladas para poder compilar y correr el programa.
+
+- nginx
+- curl
+- system D
+- logrotation
 
 ## Configuracion del nginx
+
+Para instalar nginx se debe seguir las instrucciones presentes en [nginx](https://nginx.org/en/linux_packages.html)
 
 Primero se entra a /etc/nginx/sites-available y se debe crear 1 archivo por cada servidor que se desea hacer.
 

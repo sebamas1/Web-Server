@@ -31,12 +31,21 @@ int incrementar_contador_usuarios()
 
         curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1); // si no encuentra la pagina falla
 
+        //setea la solicitud en application/json
+        struct curl_slist *headers = NULL;
+        headers = curl_slist_append(headers, "Accept: application/json");
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+
         /* Perform the request, res will get the return code */
         res = curl_easy_perform(curl);
 
         /* Check for errors */
         if (res != CURLE_OK)
         {
+            fprintf(stderr, "curl_easy_perform() failed: %s\n",
+                    curl_easy_strerror(res));
             ret = -1;
         }
         /* always cleanup */
@@ -50,7 +59,7 @@ int callback_usuarios_creados(__attribute__((unused)) const struct _u_request *r
 {
     if (leer_headers(request, response))
     {
-        return U_CALLBACK_CONTINUE;
+        return U_CALLBACK_ERROR;
     }
     int cantidad_usuarios = get_cantidad_usuarios();
     char *usuarios[cantidad_usuarios];
@@ -80,7 +89,7 @@ int callback_useradd(__attribute__((unused)) const struct _u_request *request, s
 {
     if (leer_headers(request, response))
     {
-        return U_CALLBACK_CONTINUE;
+        return U_CALLBACK_ERROR;
     }
     const char *user_name = NULL;
     const char *user_pass = NULL;
@@ -121,7 +130,7 @@ int callback_useradd(__attribute__((unused)) const struct _u_request *request, s
 
     if (incrementar_contador_usuarios())
     {
-        loguear("contador increment caido, no se pudo incrementar el contador", "<contador_increment>");
+        loguear("No se pudo incrementar el contador porque el servidor esta caido o el formato de envio es incorrecto", "<contador_increment>");
     }
 
     // convierte el id en un string

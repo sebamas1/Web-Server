@@ -16,10 +16,10 @@ int callback_contador_value(__attribute__((unused)) const struct _u_request *req
 
 int callback_contador_increment(__attribute__((unused)) const struct _u_request *request, __attribute__((unused)) struct _u_response *response, __attribute__((unused)) void *user_data)
 {
-    // if (leer_headers(request, response))
-    // {
-    //     return U_CALLBACK_CONTINUE;
-    // }
+    if (leer_headers(request, response))
+    {
+        return U_ERROR_NOT_FOUND;
+    }
     numero_usuarios++;
 
     // obtiene el ip del cliente
