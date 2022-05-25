@@ -1,3 +1,11 @@
+## Lo que falta
+
+- Falta que de alguna forma metas al /etc/hosts que localhost te lo reconozca como contadorusuarios.com y tp6.com mediante el makefile
+- Falta sacar el hardcodeo ese de que se leen los usuarios a partir de "sebastian"
+- Falta el systemD con todas las modificaciones que le tengas que hacer al makefile para que configure el programa
+- Falta probar lo del SSH con el usuario
+
+
 ## Requerimientos
 
 Se deben tener las siguientes herramientas instaladas para poder compilar y correr el programa.
