@@ -7,9 +7,8 @@ config:
 	cp conf/tp6_mascasariego_2022 /etc/logrotate.d
 	cp conf/tp6.com /etc/nginx/sites-available/
 	cp conf/contadorusuarios.com /etc/nginx/sites-available/
-	cd /etc/nginx/sites-enabled/
-	ln -s ../sites-available/tp6.com
-	ln -s ../sites-available/contadorusuarios.com
+	ln -s /etc/nginx/sites-available/tp6.com /etc/nginx/sites-enabled/tp6.com
+	ln -s /etc/nginx/sites-available/contadorusuarios.com /etc/nginx/sites-enabled/contadorusuarios.com
 	nginx -s reload
 
 creadorusuarios: obj/creadorusuarios.o obj/util.o obj/comun.o
@@ -35,10 +34,14 @@ obj/util.o: bin/creadorusuarios/util.c
 	gcc $(CFLAGS) -c bin/creadorusuarios/util.c -o obj/util.o
 
 clean:
-	rm -f obj/*
+	rm -f -r obj/*
 	rm -f tp6
-	rmdir obj
 	rm -f tp6.com
 	rm -f contadorusuarios.com
 	rm -f contadorusuarios
 	rm -f creadorusuarios
+	rm /etc/nginx/sites-enabled/tp6.com
+	rm /etc/nginx/sites-enabled/contadorusuarios.com
+	rm /etc/nginx/sites-available/tp6.com
+	rm /etc/nginx/sites-available/contadorusuarios.com
+	rmdir obj

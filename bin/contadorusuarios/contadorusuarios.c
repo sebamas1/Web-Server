@@ -16,15 +16,11 @@ int callback_contador_value(__attribute__((unused)) const struct _u_request *req
 
 int callback_contador_increment(__attribute__((unused)) const struct _u_request *request, __attribute__((unused)) struct _u_response *response, __attribute__((unused)) void *user_data)
 {
-    if (leer_headers(request, response))
-    {
-        return U_CALLBACK_CONTINUE;
-    }
+    // if (leer_headers(request, response))
+    // {
+    //     return U_CALLBACK_CONTINUE;
+    // }
     numero_usuarios++;
-
-    // json_t *response_json = json_object();
-    // json_object_set_new(response_json, "description", json_integer((long long int) numero_usuarios));
-    // ulfius_set_json_body_response(response, 200, response_json);
 
     // obtiene el ip del cliente
     struct sockaddr_in *client_addr = (struct sockaddr_in *)request->client_address;
