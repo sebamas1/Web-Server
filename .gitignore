@@ -3,7 +3,7 @@
 
 # But not these files...
 !.gitignore
-!bin/*
+!bin/*/*
 !.git
 !Makefile
 !README.md
