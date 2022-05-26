@@ -3,9 +3,6 @@
 - Falta sacar el hardcodeo ese de que se leen los usuarios a partir de "sebastian"
 - Falta probar lo del SSH con el usuario
 
-
-
-
 ## Requerimientos
 
 Se deben tener las siguientes herramientas instaladas para poder compilar y correr el programa.
@@ -14,6 +11,46 @@ Se deben tener las siguientes herramientas instaladas para poder compilar y corr
 - curl
 - system D
 - logrotation
+
+## Uso
+Para compilar el programa es necesario hacerlo siempre con sudo ya que el programa guarda archivos y toca configuraciones que son de sudo.
+
+~~~
+sudo make config
+sudo make
+~~~
+
+Luego, hay que usar el ejecutable ubicado en /usr/local tambien con privilegios de usuario para que pueda crear el usuario y ponerle contraseña.
+
+~~~
+sudo /usr/local/tp6_mascasariego/./creadorusuarios
+sudo /usr/local/tp6_mascasariego/./contadorusuarios
+~~~
+
+Esto no setea al programa para ejecutarse con systemd, pero una vez se compila se pueden ejecutar manualmente los comandos para iniciarlo en systemd; ver la seccion de systemd para esto.
+
+En este caso se uso el *Postman* para realizar las request, siempre con la cabecera application/json.
+Se adjuntan ejemplos de configuracion para una de las solicitudes del postman:
+
+![](@attachment/../Imagenes/headers.png)
+
+![](@attachment/../Imagenes/raw_body_json.png)
+
+Ademas, se adjunta un .json que tiene la coleccion de request utilizados en *Postman*. Esto puede ser importado en el programa para poder realizar la request.
+
+Una vez se haya creado el usuario, se ejecuta el comando
+
+~~~
+ssh <nombreusuario>@<servidor> -v
+~~~
+
+Ej:
+
+~~~
+ssh Roberto@localhost -v
+~~~
+
+
 
 ## Configuracion del nginx
 
@@ -100,3 +137,6 @@ Es posible usar el comando **systemctl status <nombre_servicio>** te muestra inf
 Los nombres de los servicios es 
 - contadorusuarios_mascasariego
 - creadorusuarios_mascasariego
+
+Fuentes:
+[systemd](https://www.youtube.com/watch?v=unIAGt5pB7A)

@@ -44,8 +44,8 @@ int incrementar_contador_usuarios()
         /* Check for errors */
         if (res != CURLE_OK)
         {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n",
-                    curl_easy_strerror(res));
+            // fprintf(stderr, "curl_easy_perform() failed: %s\n",
+            //         curl_easy_strerror(res));
             ret = -1;
         }
         /* always cleanup */
@@ -85,6 +85,7 @@ int callback_usuarios_creados(__attribute__((unused)) const struct _u_request *r
     return U_CALLBACK_CONTINUE;
 }
 
+
 int callback_useradd(__attribute__((unused)) const struct _u_request *request, struct _u_response *response, __attribute__((unused)) void *user_data)
 {
     if (leer_headers(request, response))
@@ -117,11 +118,28 @@ int callback_useradd(__attribute__((unused)) const struct _u_request *request, s
         return U_CALLBACK_CONTINUE;
     }
 
-    char useradd[20] = "useradd ";
+    char useradd[20] = "useradd -m ";
     strncat(useradd, user_name, strlen(user_name));
     if (system(useradd))
     {
         ulfius_set_string_body_response(response, 400, "No se pudo crear el usuario\n");
+        return U_CALLBACK_CONTINUE;
+    }
+    //concatena la contraseña junto a los comandos como se muestra en la siguiente linea
+    //echo -e "contraseña\ncontraseña\n" | passwd Roberto
+    //ademas concatena al final > /dev/null 2>&1 para que no muestre NADA en consola
+    char passwd[strlen("echo \"") + 2*(strlen(user_pass)) + strlen("passwd ") + strlen(user_name) + strlen(" > /dev/null 2>&1")];
+    memset(passwd, 0, sizeof(passwd));
+    strcat(passwd, "echo \"");
+    strncat(passwd, user_pass, strlen(user_pass));
+    strcat(passwd, "\n");
+    strncat(passwd, user_pass, strlen(user_pass));
+    strcat(passwd, "\n\" | passwd ");
+    strncat(passwd, user_name, strlen(user_name));
+    strcat(passwd, " > /dev/null 2>&1");
+    if(system(passwd))
+    {
+        ulfius_set_string_body_response(response, 400, "No se pudo cambiar la contraseña\n");
         return U_CALLBACK_CONTINUE;
     }
 

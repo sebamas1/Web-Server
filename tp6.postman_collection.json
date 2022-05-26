@@ -1,0 +1,152 @@
+{
+	"info": {
+		"_postman_id": "f46a2a8b-3d64-470b-88fb-36cd4dfbeb5a",
+		"name": "tp6",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21092713"
+	},
+	"item": [
+		{
+			"name": "tp6.com/useradd",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"user_name\" : \"Roberto\",\n    \"password\" : \"12345\"\n}"
+				},
+				"url": {
+					"raw": "tp6.com/api/users",
+					"host": [
+						"tp6",
+						"com"
+					],
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "tp6.com/contadorusuarios",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "tp6.com/api/users",
+					"host": [
+						"tp6",
+						"com"
+					],
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "contadorusuarios.com/contador/value",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "contadorusuarios.com/contador/value",
+					"host": [
+						"contadorusuarios",
+						"com"
+					],
+					"path": [
+						"contador",
+						"value"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "contadorusuarios.com/contador/increment",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "contadorusuarios.com/contador/increment",
+					"host": [
+						"contadorusuarios",
+						"com"
+					],
+					"path": [
+						"contador",
+						"increment"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
