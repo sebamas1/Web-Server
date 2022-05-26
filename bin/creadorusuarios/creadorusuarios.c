@@ -59,6 +59,7 @@ int callback_usuarios_creados(__attribute__((unused)) const struct _u_request *r
 {
     if (leer_headers(request, response))
     {
+        ulfius_set_string_body_response(response, 500, "Error al leer headers");
         return U_CALLBACK_ERROR;
     }
     int cantidad_usuarios = get_cantidad_usuarios();
@@ -190,7 +191,7 @@ int main(void)
         while(1){
             
         }
-        getchar();
+        //getchar();
     }
     else
     {
