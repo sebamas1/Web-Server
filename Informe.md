@@ -1,8 +1,3 @@
-## Lo que falta
-
-- Falta sacar el hardcodeo ese de que se leen los usuarios a partir de "sebastian"
-- Falta probar lo del SSH con el usuario
-
 ## Requerimientos
 
 Se deben tener las siguientes herramientas instaladas para poder compilar y correr el programa.
@@ -11,6 +6,7 @@ Se deben tener las siguientes herramientas instaladas para poder compilar y corr
 - curl
 - system D
 - logrotation
+- Se recomienda instalar y usar Postman para las request.
 
 ## Uso
 Para compilar el programa es necesario hacerlo siempre con sudo ya que el programa guarda archivos y toca configuraciones que son de sudo.
@@ -41,13 +37,13 @@ Ademas, se adjunta un .json que tiene la coleccion de request utilizados en *Pos
 Una vez se haya creado el usuario, se ejecuta el comando
 
 ~~~
-ssh <nombreusuario>@<servidor> -v
+ssh <nombreusuario>@<servidor>
 ~~~
 
 Ej:
 
 ~~~
-ssh Roberto@localhost -v
+ssh Roberto@localhost
 ~~~
 
 

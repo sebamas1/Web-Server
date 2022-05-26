@@ -19,7 +19,7 @@ void obtener_usuarios(char **usuarios, int cantidad_usuarios)
     struct passwd *pw;
     int i = 0;
     setpwent();
-    while (strcmp((pw = getpwent())->pw_name, "sebastian"))
+    while (strcmp((pw = getpwent())->pw_name, getlogin()))
     {
     }
     do
