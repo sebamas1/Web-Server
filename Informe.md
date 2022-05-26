@@ -7,6 +7,7 @@ Se deben tener las siguientes herramientas instaladas para poder compilar y corr
 - system D
 - logrotation
 - Se recomienda instalar y usar Postman para las request.
+- Si se desea correr este programa en la computadora local, es necesario tener instalado un [servidor SSH](https://phoenixnap.com/kb/ssh-to-connect-to-remote-server-linux-or-windows)
 
 ## Uso
 Para compilar el programa es necesario hacerlo siempre con sudo ya que el programa guarda archivos y toca configuraciones que son de sudo.
@@ -46,6 +47,13 @@ Ej:
 ssh Roberto@localhost
 ~~~
 
+Para conectarse mediante otra computadora que esta en la misma red LAN, es tan simple como
+
+~~~
+ssh <usuario_a_conectar>@<ip_privada>
+~~~
+
+Una vez conectado mediante ssh, si se usa el comando **who** en la computadora servidor se puede ver la coneccion activa de ssh y la ip de origen de la coneccion.
 
 
 ## Configuracion del nginx
