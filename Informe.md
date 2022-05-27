@@ -55,6 +55,15 @@ ssh <usuario_a_conectar>@<ip_privada>
 
 Una vez conectado mediante ssh, si se usa el comando **who** en la computadora servidor se puede ver la coneccion activa de ssh y la ip de origen de la coneccion.
 
+### Contacto con los distintos servidores
+
+- contadorusuarios.com/contador/value (GET) : devuelve la cantidad de usuarios que lista tp6.com/api/users. En caso de borrar usuarios este servicio **no actualiza su contador** a menos que se reinicie el servicio de contador.
+- contadorusuarios.com/contador/increment (POST) : es posible llamar a este servicio para incrementar su contador sin crear un nuevo usuario.
+- tp6.com/api/users (GET): lista todos los usuarios a partir del ID 1000. Esto puede causar que se listen otros usuarios que estan presentes debido a la instalacion de otros programas, pero es la unica forma que se me ocurrio de que los usuarios listados perduren a pesar de que se caiga el servicio. Si no se lee directamente desde passw y se guarda en un log no se asegura que los usuarios sean realmente esos.
+- tp6.com/api/users (POST) : crea un nuevo usuario. En caso de que no sea posible crearlo, devuelve un mensaje.
+
+
+
 
 ## Configuracion del nginx
 

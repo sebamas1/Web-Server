@@ -6,7 +6,12 @@ size_t write_data(__attribute__((unused)) void *buffer, size_t size, __attribute
     return size * nmemb;
 }
 
-int incrementar_contador_usuarios()
+/*
+Esta funcion hace un POST a incrementar del servicio contador. Se envia un json con la propiedad ip
+del cliente de origen. Ademas, se setean los headers apropiados para el servicio contador.
+*/
+
+int incrementar_contador_usuarios(const char* ip_cliente)
 {
     int ret = 0;
     CURL *curl;
@@ -19,12 +24,21 @@ int incrementar_contador_usuarios()
     curl = curl_easy_init();
     if (curl)
     {
+
+        char jsonObj[strlen("{\n\t\"ip\":\"") + 20];
+        memset(jsonObj, 0, sizeof(jsonObj));
+        strcat(jsonObj, "{\"ip\":\"");
+        strncat(jsonObj, ip_cliente, strlen(ip_cliente));
+        strcat(jsonObj, "\"\n}");
+        
+        char* json_enviar = jsonObj;
+
         /* First set the URL that is about to receive our POST. This URL can
            just as well be a https:// URL if that is what should receive the
            data. */
         curl_easy_setopt(curl, CURLOPT_URL, "http://contadorusuarios.com/contador/increment");
         /* Now specify the POST data */
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, ""); // aca meterias los parametros
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, json_enviar); // aca meterias los parametros
 
         // setea curl para que no imprima en stdout
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
@@ -36,7 +50,6 @@ int incrementar_contador_usuarios()
         headers = curl_slist_append(headers, "Accept: application/json");
         headers = curl_slist_append(headers, "Content-Type: application/json");
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-
 
         /* Perform the request, res will get the return code */
         res = curl_easy_perform(curl);
@@ -147,7 +160,12 @@ int callback_useradd(__attribute__((unused)) const struct _u_request *request, s
     char *created_at = get_time_string();
     ulfius_set_json_body_response(response, 200, create_json_respose_useradd(getid((char *)user_name), user_name, created_at));
 
-    if (incrementar_contador_usuarios())
+   
+   
+       //obtiene el ip real del cliente leyendo la cabecera de nginx
+    const char *ip_cliente = u_map_get(request->map_header, "X-Real-IP");
+
+    if (incrementar_contador_usuarios(ip_cliente))
     {
         loguear("No se pudo incrementar el contador porque el servidor esta caido o el formato de envio es incorrecto", "<useradd>");
     }

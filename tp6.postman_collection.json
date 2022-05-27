@@ -132,7 +132,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": ""
+					"raw": "{\n    \"ip\" : \"10.0.0.1\"\n}"
 				},
 				"url": {
 					"raw": "contadorusuarios.com/contador/increment",

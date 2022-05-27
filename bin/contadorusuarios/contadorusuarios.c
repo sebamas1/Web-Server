@@ -22,10 +22,16 @@ int callback_contador_increment(__attribute__((unused)) const struct _u_request 
     }
     numero_usuarios++;
 
-    // obtiene el ip del cliente
-    struct sockaddr_in *client_addr = (struct sockaddr_in *)request->client_address;
-    char ip_cliente[INET_ADDRSTRLEN];
-    inet_ntop(AF_INET, &(client_addr->sin_addr), ip_cliente, INET_ADDRSTRLEN);
+    //obtiene el json del header y luego lee el valor de la propiedad "ip"
+    json_error_t* error = NULL;
+    json_t *mensaje_json = ulfius_get_json_body_request(request, error);
+    
+    if (mensaje_json == NULL)
+    {
+        ulfius_set_string_body_response(response, 400, "No se pudo obtener el json del body\n");
+        return U_CALLBACK_CONTINUE;
+    }
+    const char *ip_cliente = json_string_value(json_object_get(mensaje_json, "ip"));
 
     // concatena Contador incrementado desde: y el ip del cliente
     char mensaje_log[(int)strlen("Contador incrementado desde: ") + INET_ADDRSTRLEN + 1];
