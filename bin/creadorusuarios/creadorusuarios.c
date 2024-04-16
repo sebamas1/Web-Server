@@ -49,6 +49,12 @@ int incrementar_contador_usuarios(const char* ip_cliente)
         struct curl_slist *headers = NULL;
         headers = curl_slist_append(headers, "Accept: application/json");
         headers = curl_slist_append(headers, "Content-Type: application/json");
+        // //agrega la ip real como un header
+        // char ip_header[strlen("X-Real-IP: ") + 20];
+        // memset(ip_header, 0, sizeof(ip_header));
+        // strcat(ip_header, "X-Real-IP: ");
+        // strncat(ip_header, ip_cliente, strlen(ip_cliente));
+        // headers = curl_slist_append(headers, ip_header);
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
         /* Perform the request, res will get the return code */

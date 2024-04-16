@@ -32,6 +32,12 @@ int callback_contador_increment(__attribute__((unused)) const struct _u_request 
         return U_CALLBACK_CONTINUE;
     }
     const char *ip_cliente = json_string_value(json_object_get(mensaje_json, "ip"));
+   
+    if (ip_cliente == NULL)
+    {
+        ulfius_set_string_body_response(response, 400, "No se pudo obtener el ip del cliente\n");
+        return U_CALLBACK_CONTINUE;
+    }
 
     // concatena Contador incrementado desde: y el ip del cliente
     char mensaje_log[(int)strlen("Contador incrementado desde: ") + INET_ADDRSTRLEN + 1];
