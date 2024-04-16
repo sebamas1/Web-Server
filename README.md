@@ -179,10 +179,6 @@ Los servicios deberán pasar una batería de test escritas en _postman_ provista
 - El código no debe contener errores, ni warnings.
 - El código no debe contener errores de cppcheck.
 
-
-## Evaluación
-El presente trabajo práctico es individual deberá entregarse antes del jueves 27 de Mayo de 2022 a las 23:55 mediante el LEV.  Será corregido y luego deberá coordinar una fecha para la defensa oral del mismo.
-
 ## Referencias y ayudas
 - [Systrem D ](https://systemd.io/)
 - [System D en Freedesktop](https://www.freedesktop.org/wiki/Software/systemd/)
